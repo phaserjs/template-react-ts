@@ -40,6 +40,7 @@ We have provided a default project structure to get you started. This is as foll
 - `index.html` - A basic HTML page to contain the game.
 - `src` - Contains the React client source code.
 - `src/main.tsx` - The main **React** entry point. This bootstraps the React application.
+- `src/vite-env.d.ts` - Global TypeScript declarations, provide types information.
 - `src/App.tsx` - The main React component.
 - `src/game/PhaserGame.tsx` - The React component that initializes the Phaser Game and serve like a bridge between React and Phaser.
 - `src/game/EventBus.ts` - A simple event bus to communicate between React and Phaser.
