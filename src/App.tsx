@@ -1,73 +1,98 @@
-import { useRef, useState } from "react";
-import { IRefPhaserGame, PhaserGame } from "./game/PhaserGame";
-import { MainMenu } from "./game/scenes/MainMenu";
+import { useRef, useState } from 'react';
+import { IRefPhaserGame, PhaserGame } from './game/PhaserGame';
+import { MainMenu } from './game/scenes/MainMenu';
 
 function App()
 {
-    const [logoPosition, setLogoPosition] = useState({ x: 0, y: 0 });
+    // The sprite can only be moved in the MainMenu Scene
     const [canMoveLogo, setCanMoveLogo] = useState(true);
 
-    // Phaser game instance
-    const [scene, setScene] = useState<Phaser.Scene>();
+    //  References to the PhaserGame component (game and scene are exposed)
+    const phaserRef = useRef<IRefPhaserGame | null>(null);
+    const [logoPosition, setLogoPosition] = useState({ x: 0, y: 0 });
 
-    const phaser_ref = useRef<IRefPhaserGame | null>(null);
+    const changeScene = () => {
 
-    // Update the current active scene
-    const setCurrentActiveScene = (scene: Phaser.Scene) =>
-    {
-        setScene(scene);
-        setCanMoveLogo(scene.scene.key !== 'MainMenu');
-    }
-
-    const changeScene = () =>
-    {
-        if (scene)
-        {
-            (scene as MainMenu).changeScene();
+        if(phaserRef.current)
+        {     
+            const scene = phaserRef.current.scene as MainMenu;
+            
+            if (scene)
+            {
+                scene.changeScene();
+            }
         }
     }
 
-    const moveLogo = () =>
-    {
-        if (scene && scene.scene.key === 'MainMenu')
+    const moveSprite = () => {
+
+        if(phaserRef.current)
         {
-            // The MainMenu
-            (scene as MainMenu)
-                .moveLogo((position) =>
-                {
-                    setLogoPosition({ x: position.x, y: position.y });
+
+            const scene = phaserRef.current.scene as MainMenu;
+
+            if (scene && scene.scene.key === 'MainMenu')
+            {
+                // Get the update logo position
+                scene.moveLogo(({ x, y }) => {
+
+                    setLogoPosition({ x, y });
+
                 });
+            }
+        }
+
+    }
+
+    const addSprite = () => {
+
+        if (phaserRef.current)
+        {
+            const scene = phaserRef.current.scene;
+
+            if (scene)
+            {
+                // Add more stars
+                const x = Phaser.Math.Between(64, scene.scale.width - 64);
+                const y = Phaser.Math.Between(64, scene.scale.height - 64);
+    
+                //  `add.sprite` is a Phaser GameObjectFactory method and it returns a Sprite Game Object instance
+                const star = scene.add.sprite(x, y, 'star');
+    
+                //  ... which you can then act upon. Here we create a Phaser Tween to fade the star sprite in and out.
+                //  You could, of course, do this from within the Phaser Scene code, but this is just an example
+                //  showing that Phaser objects and systems can be acted upon from outside of Phaser itself.
+                scene.add.tween({
+                    targets: star,
+                    duration: 500 + Math.random() * 1000,
+                    alpha: 0,
+                    yoyo: true,
+                    repeat: -1
+                });
+            }
         }
     }
 
-    const addStars = () =>
-    {
-        if (scene)
-        {
-            // Add more stars
-            const x = Phaser.Math.Between(100, scene.scale.width - 100);
-            const y = Phaser.Math.Between(100, scene.scale.height - 100);
-
-            scene.add.image(x, y, 'star');
-        }
+    // Event emitted from the PhaserGame component
+    const currentScene = (scene: Phaser.Scene) => {
+        setCanMoveLogo(scene.scene.key !== 'MainMenu');
     }
 
     return (
         <div id="app">
-            <PhaserGame ref={phaser_ref} currentActiveScene={setCurrentActiveScene} />
+            <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
             <div>
                 <div>
-                    <button className="button-change-scene" onClick={changeScene}>Change Scene</button>
+                    <button className="button" onClick={changeScene}>Change Scene</button>
                 </div>
                 <div>
-                    <button disabled={canMoveLogo} className="button-change-scene" onClick={moveLogo}>Move main Logo</button>
+                    <button disabled={canMoveLogo} className="button" onClick={moveSprite}>Toggle Movement</button>
                 </div>
-                <div className="margin-left">
-                    <span>Logo Position:</span>
-                    <pre>{`{ x: ${logoPosition.x}, y: ${logoPosition.y} }`}</pre>
+                <div className="spritePosition">Sprite Position:
+                    <pre>{`{\n  x: ${logoPosition.x}\n  y: ${logoPosition.y}\n}`}</pre>
                 </div>
                 <div>
-                    <button className="button-change-scene" onClick={addStars}>Add stars</button>
+                    <button className="button" onClick={addSprite}>Add New Sprite</button>
                 </div>
             </div>
         </div>
