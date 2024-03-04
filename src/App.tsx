@@ -5,11 +5,11 @@ import { MainMenu } from './game/scenes/MainMenu';
 function App()
 {
     // The sprite can only be moved in the MainMenu Scene
-    const [canMoveLogo, setCanMoveLogo] = useState(true);
+    const [canMoveSprite, setCanMoveSprite] = useState(true);
 
     //  References to the PhaserGame component (game and scene are exposed)
     const phaserRef = useRef<IRefPhaserGame | null>(null);
-    const [logoPosition, setLogoPosition] = useState({ x: 0, y: 0 });
+    const [spritePosition, setSpritePosition] = useState({ x: 0, y: 0 });
 
     const changeScene = () => {
 
@@ -36,7 +36,7 @@ function App()
                 // Get the update logo position
                 scene.moveLogo(({ x, y }) => {
 
-                    setLogoPosition({ x, y });
+                    setSpritePosition({ x, y });
 
                 });
             }
@@ -75,7 +75,9 @@ function App()
 
     // Event emitted from the PhaserGame component
     const currentScene = (scene: Phaser.Scene) => {
-        setCanMoveLogo(scene.scene.key !== 'MainMenu');
+
+        setCanMoveSprite(scene.scene.key !== 'MainMenu');
+        
     }
 
     return (
@@ -86,10 +88,10 @@ function App()
                     <button className="button" onClick={changeScene}>Change Scene</button>
                 </div>
                 <div>
-                    <button disabled={canMoveLogo} className="button" onClick={moveSprite}>Toggle Movement</button>
+                    <button disabled={canMoveSprite} className="button" onClick={moveSprite}>Toggle Movement</button>
                 </div>
                 <div className="spritePosition">Sprite Position:
-                    <pre>{`{\n  x: ${logoPosition.x}\n  y: ${logoPosition.y}\n}`}</pre>
+                    <pre>{`{\n  x: ${spritePosition.x}\n  y: ${spritePosition.y}\n}`}</pre>
                 </div>
                 <div>
                     <button className="button" onClick={addSprite}>Add New Sprite</button>
