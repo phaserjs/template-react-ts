@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { IRefPhaserGame, PhaserGame } from './game/PhaserGame';
 import { MainMenu } from './game/scenes/MainMenu';
+import { Game } from './game/scenes/Game';
 
 function App()
 {
@@ -15,7 +16,7 @@ function App()
 
         if(phaserRef.current)
         {     
-            const scene = phaserRef.current.scene as MainMenu;
+            const scene = phaserRef.current.scene as Game;
             
             if (scene)
             {

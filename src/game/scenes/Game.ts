@@ -1,36 +1,45 @@
-import { EventBus } from '../EventBus';
-import { Scene } from 'phaser';
+import { EventBus } from "../EventBus";
+import { Scene } from "phaser";
 
-export class Game extends Scene
-{
+export class Game extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
     gameText: Phaser.GameObjects.Text;
+    map: Phaser.Tilemaps.Tilemap;
+    objectLayer: Phaser.Tilemaps.TilemapLayer;
+    groundLayer: Phaser.Tilemaps.TilemapLayer;
 
-    constructor ()
-    {
-        super('Game');
+    constructor() {
+        super("Game");
     }
 
-    create ()
-    {
+    create() {
         this.camera = this.cameras.main;
-        this.camera.setBackgroundColor(0x00ff00);
 
-        this.background = this.add.image(512, 384, 'background');
-        this.background.setAlpha(0.5);
+        this.map = this.make.tilemap({
+            tileWidth: 32,
+            tileHeight: 32,
+            width: 40,
+            height: 23,
+        });
 
-        this.gameText = this.add.text(512, 384, 'Make something fun!\nand share it with us:\nsupport@phaser.io', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        }).setOrigin(0.5).setDepth(100);
+        const tilesPrimalPlateauGrass = this.map.addTilesetImage(
+            "tiles-primal_plateau-grass"
+        ) as Phaser.Tilemaps.Tileset;
 
-        EventBus.emit('current-scene-ready', this);
+        this.groundLayer = this.map.createBlankLayer(
+            "Ground Layer",
+            tilesPrimalPlateauGrass
+        ) as Phaser.Tilemaps.TilemapLayer;
+
+        this.groundLayer.fill(0, 0, 0, this.map.width, this.map.height);
+
+
+
+        EventBus.emit("current-scene-ready", this);
     }
 
-    changeScene ()
-    {
-        this.scene.start('GameOver');
+    changeScene() {
+        this.scene.start("GameOver");
     }
 }
