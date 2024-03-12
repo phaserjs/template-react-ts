@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { IRefPhaserGame, PhaserGame } from "./game/PhaserGame";
 import { MainMenu } from "./game/scenes/MainMenu";
 import { Game } from "./game/scenes/Game";
+import TilePalette from "./components/sceneEditor/tilePalette";
 
 function App() {
     // The sprite can only be moved in the MainMenu Scene
@@ -10,9 +11,6 @@ function App() {
     //  References to the PhaserGame component (game and scene are exposed)
     const phaserRef = useRef<IRefPhaserGame | null>(null);
     const [spritePosition, setSpritePosition] = useState({ x: 0, y: 0 });
-
-    const [cursorX, setCursorX] = useState(0);
-    const [cursorY, setCursorY] = useState(0);
 
     const changeScene = () => {
         if (phaserRef.current) {
@@ -35,12 +33,6 @@ function App() {
                 });
             }
         }
-    };
-
-    const showCursor = (e: any) => {
-        console.log(e);
-        setCursorX(e.clientX);
-        setCursorY(e.clientY);
     };
 
     const addSprite = () => {
@@ -76,53 +68,14 @@ function App() {
 
     return (
         <div id="app">
-            <div className="topBar"></div>
-            <div className="mainContent">
-                <div className="gameArea">
-                    <PhaserGame
-                        ref={phaserRef}
-                        currentActiveScene={currentScene}
-                    />
+            <div className="topBar h-32"></div>
+            <div className="projectArea pl-24 absolute -z-10">
+                <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
+            </div>
+            <div className="mainContent flex">
+                <div className="absolute right-0 w-[32rem] h-[64rem]">
+                    <TilePalette />
                 </div>
-                <div>
-                    <div className="tilePalette">
-                        {/* <span>格子列表</span> */}
-                        <div onClick={showCursor}>
-                            <img src="./assets/tilemaps/primal_plateau/grass.png" />
-                        </div>
-                        <img
-                            className="cursorImg"
-                            src="./assets/cursor.png"
-                            style={{ left: cursorX, top: cursorY }}
-                        ></img>
-                    </div>
-                </div>
-
-                {/* <div>
-                    <div>
-                        <button className="button" onClick={changeScene}>
-                            Change Scene
-                        </button>
-                    </div>
-                    <div>
-                        <button
-                            disabled={canMoveSprite}
-                            className="button"
-                            onClick={moveSprite}
-                        >
-                            Toggle Movement
-                        </button>
-                    </div>
-                    <div className="spritePosition">
-                        Sprite Position:
-                        <pre>{`{\n  x: ${spritePosition.x}\n  y: ${spritePosition.y}\n}`}</pre>
-                    </div>
-                    <div>
-                        <button className="button" onClick={addSprite}>
-                            Add New Sprite
-                        </button>
-                    </div>
-                </div> */}
             </div>
         </div>
     );
