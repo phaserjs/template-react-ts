@@ -2,15 +2,22 @@ import { useRef, useState } from "react";
 import { IRefPhaserGame, PhaserGame } from "./game/PhaserGame";
 import { MainMenu } from "./game/scenes/MainMenu";
 import { Game } from "./game/scenes/Game";
-import TilePalette from "./components/sceneEditor/tilePalette";
+import TilePalette from "./components/sceneEditor/TilePalette";
+import { EventBus } from "./game/EventBus";
 
 function App() {
-    // The sprite can only be moved in the MainMenu Scene
+    // // The sprite can only be moved in the MainMenu Scene
     const [canMoveSprite, setCanMoveSprite] = useState(true);
+
+    const [spritePosition, setSpritePosition] = useState({ x: 0, y: 0 });
 
     //  References to the PhaserGame component (game and scene are exposed)
     const phaserRef = useRef<IRefPhaserGame | null>(null);
-    const [spritePosition, setSpritePosition] = useState({ x: 0, y: 0 });
+
+    // Event emitted from the PhaserGame component
+    const currentScene = (scene: Phaser.Scene) => {
+        // setCanMoveSprite(scene.scene.key !== "MainMenu");
+    };
 
     const changeScene = () => {
         if (phaserRef.current) {
@@ -60,10 +67,10 @@ function App() {
             }
         }
     };
-
-    // Event emitted from the PhaserGame component
-    const currentScene = (scene: Phaser.Scene) => {
-        setCanMoveSprite(scene.scene.key !== "MainMenu");
+    const handleSelectTile = (index: number) => {
+        if (phaserRef.current) phaserRef.current.drawTileIndex = index;
+        EventBus.emit("draw-tile", index);
+        console.log("handleSelectTile", index);
     };
 
     return (
@@ -74,7 +81,7 @@ function App() {
             </div>
             <div className="mainContent flex">
                 <div className="absolute right-0 w-[32rem] h-[64rem]">
-                    <TilePalette />
+                    <TilePalette onSelectTile={handleSelectTile} />
                 </div>
             </div>
         </div>

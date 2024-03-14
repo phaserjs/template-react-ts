@@ -1,9 +1,10 @@
-import { useState } from "react";
+// import { useState } from "react";
+// const jimp = require('jimp');
 
-export default function SplitImage(){
-    return (
-        <div>
+// export default function SplitImage(){
+//     return (
+//         <div>
             
-        </div>
-    )
-}
+//         </div>
+//     )
+// }

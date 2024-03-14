@@ -5,6 +5,7 @@ import { EventBus } from "./EventBus";
 export interface IRefPhaserGame {
     game: Phaser.Game | null;
     scene: Phaser.Scene | null;
+    drawTileIndex?: number | null;
 }
 
 interface IProps {
@@ -20,9 +21,15 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
                 game.current = StartGame("game-container");
 
                 if (typeof ref === "function") {
-                    ref({ game: game.current, scene: null });
+                    ref({
+                        game: game.current,
+                        scene: null,
+                    });
                 } else if (ref) {
-                    ref.current = { game: game.current, scene: null };
+                    ref.current = {
+                        game: game.current,
+                        scene: null,
+                    };
                 }
             }
 
@@ -47,7 +54,10 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
                         currentActiveScene(scene_instance);
 
                         if (typeof ref === "function") {
-                            ref({ game: game.current, scene: scene_instance });
+                            ref({
+                                game: game.current,
+                                scene: scene_instance,
+                            });
                         } else if (ref) {
                             ref.current = {
                                 game: game.current,
