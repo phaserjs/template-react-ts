@@ -10,7 +10,8 @@ export class Game extends Scene {
     objectLayer: Phaser.Tilemaps.TilemapLayer;
     groundLayer: Phaser.Tilemaps.TilemapLayer;
     controls: Phaser.Cameras.Controls.FixedKeyControl;
-    preDrawTileIndex: number;
+    preDrawTile: Phaser.Math.Vector2;
+    preDrawTile2: Phaser.Math.Vector2 | null;
     selectedBox: Phaser.GameObjects.Graphics;
 
     constructor() {
@@ -96,9 +97,16 @@ export class Game extends Scene {
 
     onListener() {
         // Receive tile Index
-        EventBus.on("draw-tile", (index: number) => {
-            this.preDrawTileIndex = index;
-        });
+        EventBus.on(
+            "paint-tiles",
+            (stX: number, stY: number, edX?: number, edY?: number) => {
+                console.log(stX, stY);
+                this.preDrawTile = new Phaser.Math.Vector2(stX, stY);
+                if (edX && edY && edX > 0 && edY > 0) {
+                    this.preDrawTile2 = new Phaser.Math.Vector2(edX, edY);
+                } else this.preDrawTile2 = null;
+            }
+        );
     }
 
     // Common Action: Move cursor
@@ -114,21 +122,54 @@ export class Game extends Scene {
             // Tile index transform & Draw tile
             const tilesetColumns = this.groundLayer.tileset[0].columns;
             const tilesetRows = this.groundLayer.tileset[0].rows;
-            const tileColumn = this.preDrawTileIndex % 16;
-            const tileRow = Math.floor(this.preDrawTileIndex / 16);
-            const finDrawTileIndex = tileRow * tilesetColumns + tileColumn;
-            if (
-                tileColumn < tilesetColumns &&
-                finDrawTileIndex < tilesetColumns * tilesetRows
-            ) {
-                this.groundLayer.fill(
-                    finDrawTileIndex,
+
+            if (this.preDrawTile2) {
+                const finDrawTilesIndex: number[][] = [];
+                for (
+                    let i = this.preDrawTile.y;
+                    i <= this.preDrawTile2.y;
+                    i++
+                ) {
+                    for (
+                        let j = this.preDrawTile.x;
+                        j <= this.preDrawTile2.x;
+                        j++
+                    ) {
+                        const finDrawTileIndex = i * tilesetColumns + j;
+                        if (
+                            j < tilesetColumns &&
+                            finDrawTileIndex < tilesetColumns * tilesetRows
+                        ) {
+                            if (!finDrawTilesIndex[i - this.preDrawTile.y])
+                                finDrawTilesIndex[i - this.preDrawTile.y] = [];
+                            finDrawTilesIndex[i - this.preDrawTile.y].push(
+                                finDrawTileIndex
+                            );
+                        }
+                    }
+                }
+                this.groundLayer.putTilesAt(
+                    finDrawTilesIndex,
                     pointerTileXY.x,
-                    pointerTileXY.y,
-                    1,
-                    1
+                    pointerTileXY.y
                 );
+            } else {
+                const finDrawTileIndex =
+                    this.preDrawTile.y * tilesetColumns + this.preDrawTile.x;
+                if (
+                    this.preDrawTile.x < tilesetColumns &&
+                    finDrawTileIndex < tilesetColumns * tilesetRows
+                ) {
+                    this.groundLayer.putTileAt(
+                        finDrawTileIndex,
+                        pointerTileXY.x,
+                        pointerTileXY.y
+                    );
+                }
             }
+            // const tileColumn = this.preDrawTile % 16;
+            // const tileRow = Math.floor(this.preDrawTile / 16);
+            // const finDrawTileIndex = tileRow * tilesetColumns + tileColumn;
         }
     }
 }

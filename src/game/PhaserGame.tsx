@@ -5,7 +5,6 @@ import { EventBus } from "./EventBus";
 export interface IRefPhaserGame {
     game: Phaser.Game | null;
     scene: Phaser.Scene | null;
-    drawTileIndex?: number | null;
 }
 
 interface IProps {

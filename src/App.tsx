@@ -67,10 +67,13 @@ function App() {
             }
         }
     };
-    const handleSelectTile = (index: number) => {
-        if (phaserRef.current) phaserRef.current.drawTileIndex = index;
-        EventBus.emit("draw-tile", index);
-        console.log("handleSelectTile", index);
+    const handleSelectTiles = (
+        stX: number,
+        stY: number,
+        edX?: number,
+        edY?: number
+    ) => {
+        EventBus.emit("paint-tiles", stX, stY, edX, edY);
     };
 
     return (
@@ -81,7 +84,7 @@ function App() {
             </div>
             <div className="mainContent flex">
                 <div className="absolute right-0 w-[32rem] h-[64rem]">
-                    <TilePalette onSelectTile={handleSelectTile} />
+                    <TilePalette onSelectTiles={handleSelectTiles} />
                 </div>
             </div>
         </div>
