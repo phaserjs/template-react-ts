@@ -67,20 +67,22 @@ export class Game extends Scene {
 
         const worldPoint = this.input.activePointer.positionToCamera(
             this.cameras.main
-        );
+        ) as Phaser.Math.Vector2;
 
-        const pointerTileX = this.map.worldToTileX(worldPoint.x);
-        const pointerTileY = this.map.worldToTileY(worldPoint.y);
+        const pointerTileXY = this.map.worldToTileXY(
+            worldPoint.x,
+            worldPoint.y
+        );
 
         // this.marker.x = this.map.tileToWorldX(pointerTileX);
         // this.marker.y = this.map.tileToWorldY(pointerTileY);
 
-        if (this.input.manager.activePointer.isDown) {
+        if (this.input.manager.activePointer.isDown && pointerTileXY != null) {
             // this.onClick();
             this.map.fill(
                 this.preDrawTileIndex,
-                pointerTileX,
-                pointerTileY,
+                pointerTileXY.x,
+                pointerTileXY.y,
                 1,
                 1
             );
