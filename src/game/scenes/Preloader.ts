@@ -30,6 +30,10 @@ export class Preloader extends Scene {
             "tiles-primal_plateau-grass",
             "tilemaps/primal_plateau/grass.png"
         );
+        this.load.image(
+            "tiles-primal_plateau-props",
+            "tilemaps/primal_plateau/props.png"
+        );
     }
 
     create() {

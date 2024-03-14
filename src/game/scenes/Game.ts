@@ -15,18 +15,8 @@ export class Game extends Scene {
         super("Game");
     }
 
-    onClick() {
-        console.log(1);
-        // console.log(pointer);
-        // const worldPoint = this.input.activePointer.positionToCamera(
-        //     this.cameras.main
-        // );
-        // const tileX = this.groundLayer.worldToTileX(worldPoint.x);
-        // const tileY = this.groundLayer.worldToTileY(worldPoint.y);
-    }
     onListener() {
         EventBus.on("draw-tile", (index: number) => {
-            console.log("draw-tile", index);
             this.preDrawTileIndex = index;
         });
     }
@@ -34,7 +24,7 @@ export class Game extends Scene {
     create() {
         this.onListener();
 
-        this.camera = this.cameras.main;
+        // this.camera = this.cameras.main;
         // this.controls = new Phaser.Cameras.Controls.FixedKeyControl()
 
         this.map = this.make.tilemap({
@@ -44,15 +34,25 @@ export class Game extends Scene {
             height: 23,
         });
 
+        // Load tilemap
         const tilesPrimalPlateauGrass = this.map.addTilesetImage(
             "tiles-primal_plateau-grass"
         ) as Phaser.Tilemaps.Tileset;
 
-        this.groundLayer = this.map.createBlankLayer(
-            "Ground Layer",
-            tilesPrimalPlateauGrass
+        const tilesPrimalPlateauProps = this.map.addTilesetImage(
+            "tiles-primal_plateau-props"
+        ) as Phaser.Tilemaps.Tileset;
+
+        this.groundLayer = this.map.createBlankLayer("Ground Layer", [
+            tilesPrimalPlateauGrass,
+        ]) as Phaser.Tilemaps.TilemapLayer;
+
+        this.objectLayer = this.map.createBlankLayer(
+            "Object Layer",
+            tilesPrimalPlateauProps
         ) as Phaser.Tilemaps.TilemapLayer;
 
+        // Init ground
         this.groundLayer.fill(0, 0, 0, this.map.width, this.map.height);
 
         EventBus.emit("current-scene-ready", this);
@@ -62,9 +62,8 @@ export class Game extends Scene {
         this.scene.start("GameOver");
     }
 
-    update(time: number, delta: number): void {
-        // this.controls.update(delta);
-
+    update(): void {
+        // Update cursor position (e.g. tile selected box)
         const worldPoint = this.input.activePointer.positionToCamera(
             this.cameras.main
         ) as Phaser.Math.Vector2;
@@ -74,18 +73,32 @@ export class Game extends Scene {
             worldPoint.y
         );
 
-        // this.marker.x = this.map.tileToWorldX(pointerTileX);
-        // this.marker.y = this.map.tileToWorldY(pointerTileY);
+        // User input
+        if (this.input.manager.activePointer.primaryDown)
+            this.onPrimaryDown(pointerTileXY);
+    }
 
-        if (this.input.manager.activePointer.isDown && pointerTileXY != null) {
-            // this.onClick();
-            this.map.fill(
-                this.preDrawTileIndex,
-                pointerTileXY.x,
-                pointerTileXY.y,
-                1,
-                1
-            );
+    onPrimaryDown(pointerTileXY: Phaser.Math.Vector2 | null) {
+        // Create Action: Draw Tile
+        if (pointerTileXY != null) {
+            // Tile index transform & Draw tile
+            const tilesetColumns = this.groundLayer.tileset[0].columns;
+            const tilesetRows = this.groundLayer.tileset[0].rows;
+            const tileColumn = this.preDrawTileIndex % 16;
+            const tileRow = Math.floor(this.preDrawTileIndex / 16);
+            const finDrawTileIndex = tileRow * tilesetColumns + tileColumn;
+            if (
+                tileColumn < tilesetColumns &&
+                finDrawTileIndex < tilesetColumns * tilesetRows
+            ) {
+                this.groundLayer.fill(
+                    finDrawTileIndex,
+                    pointerTileXY.x,
+                    pointerTileXY.y,
+                    1,
+                    1
+                );
+            }
         }
     }
 }

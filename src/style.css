@@ -10,18 +10,6 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-#app {
-    width: 100vw;
-    height: 100vh;
-}
-
-.cursorImg {
-    /* position: absolute; */
-    /* top: 0;
-    left: 0; */
-    /* display: none; */
-}
-
 .spritePosition {
     margin: 10px 0 0 10px;
     font-size: 0.8em;
