@@ -1,7 +1,7 @@
 {
     "name": "template-react-ts",
     "description": "A Phaser 3 TypeScript project template that demonstrates React communication and uses Vite for bundling.",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/phaserjs/template-react-ts.git"
@@ -21,11 +21,13 @@
         "typescript"
     ],
     "scripts": {
-        "dev": "vite --config vite/config.dev.mjs",
-        "build": "vite build --config vite/config.prod.mjs"
+        "dev": "node log.js dev & vite --config vite/config.dev.mjs",
+        "build": "node log.js build & vite build --config vite/config.prod.mjs",
+        "dev-nolog": "vite --config vite/config.dev.mjs",
+        "build-nolog": "vite build --config vite/config.prod.mjs"
     },
     "dependencies": {
-        "phaser": "^3.80.1",
+        "phaser": "^3.85.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0"
     },
@@ -38,8 +40,8 @@
         "eslint": "^8.57.0",
         "eslint-plugin-react-hooks": "^4.6.2",
         "eslint-plugin-react-refresh": "^0.4.7",
-        "typescript": "^5.2.2",
         "terser": "^5.28.1",
+        "typescript": "^5.2.2",
         "vite": "^5.3.1"
     }
 }
