@@ -9,9 +9,9 @@ This is a Phaser 3 project template that uses the React framework and Vite for b
 This template has been updated for:
 
 - [Phaser 3.88.2](https://github.com/phaserjs/phaser)
-- [React 18.2.0](https://github.com/facebook/react)
-- [Vite 5.3.1](https://github.com/vitejs/vite)
-- [TypeScript 5.2.2](https://github.com/microsoft/TypeScript)
+- [React 19.0.0](https://github.com/facebook/react)
+- [Vite 6.3.1](https://github.com/vitejs/vite)
+- [TypeScript 5.7.2](https://github.com/microsoft/TypeScript)
 
 ![screenshot](screenshot.png)
 
@@ -41,18 +41,20 @@ Once the server is running you can edit any of the files in the `src` folder. Vi
 
 We have provided a default project structure to get you started. This is as follows:
 
-- `index.html` - A basic HTML page to contain the game.
-- `src` - Contains the React client source code.
-- `src/main.tsx` - The main **React** entry point. This bootstraps the React application.
-- `src/vite-env.d.ts` - Global TypeScript declarations, provide types information.
-- `src/App.tsx` - The main React component.
-- `src/game/PhaserGame.tsx` - The React component that initializes the Phaser Game and serve like a bridge between React and Phaser.
-- `src/game/EventBus.ts` - A simple event bus to communicate between React and Phaser.
-- `src/game` - Contains the game source code.
-- `src/game/main.tsx` - The main **game** entry point. This contains the game configuration and start the game.
-- `src/game/scenes/` - The Phaser Scenes are in this folder.
-- `public/style.css` - Some simple CSS rules to help with page layout.
-- `public/assets` - Contains the static assets used by the game.
+| Path                          | Description                                                                 |
+|-------------------------------|-----------------------------------------------------------------------------|
+| `index.html`                  | A basic HTML page to contain the game.                                     |
+| `src`                         | Contains the React client source code.                                     |
+| `src/main.tsx`                | The main **React** entry point. This bootstraps the React application.      |
+| `src/PhaserGame.tsx`          | The React component that initializes the Phaser Game and acts as a bridge between React and Phaser. |
+| `src/vite-env.d.ts`           | Global TypeScript declarations, providing type information.                |
+| `src/App.tsx`                 | The main React component.                                                  |
+| `src/game/EventBus.ts`        | A simple event bus to communicate between React and Phaser.                |
+| `src/game`                    | Contains the game source code.                                             |
+| `src/game/main.tsx`           | The main **game** entry point. This contains the game configuration and starts the game. |
+| `src/game/scenes/`            | The folder where Phaser Scenes are located.                                |
+| `public/style.css`            | Some simple CSS rules to help with page layout.                            |
+| `public/assets`               | Contains the static assets used by the game.                               |
 
 ## React Bridge
 
@@ -239,6 +241,6 @@ We love to see what developers like you create with Phaser! It really motivates 
 
 Created by [Phaser Studio](mailto:support@phaser.io). Powered by coffee, anime, pixels and love.
 
-The Phaser logo and characters are &copy; 2011 - 2024 Phaser Studio Inc.
+The Phaser logo and characters are &copy; 2011 - 2025 Phaser Studio Inc.
 
 All rights reserved.
