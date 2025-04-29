@@ -1,4 +1,4 @@
 import { Events } from 'phaser';
 
-// Find out more information about the Game Config at:
+// Used to emit events between components, HTML and Phaser scenes
 export const EventBus = new Events.EventEmitter();
