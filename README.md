@@ -51,7 +51,7 @@ We have provided a default project structure to get you started. This is as foll
 | `src/App.tsx`                 | The main React component.                                                  |
 | `src/game/EventBus.ts`        | A simple event bus to communicate between React and Phaser.                |
 | `src/game`                    | Contains the game source code.                                             |
-| `src/game/main.tsx`           | The main **game** entry point. This contains the game configuration and starts the game. |
+| `src/game/main.ts`            | The main **game** entry point. This contains the game configuration and starts the game. |
 | `src/game/scenes/`            | The folder where Phaser Scenes are located.                                |
 | `public/style.css`            | Some simple CSS rules to help with page layout.                            |
 | `public/assets`               | Contains the static assets used by the game.                               |
@@ -60,7 +60,7 @@ We have provided a default project structure to get you started. This is as foll
 
 The `PhaserGame.tsx` component is the bridge between React and Phaser. It initializes the Phaser game and passes events between the two.
 
-To communicate between React and Phaser, you can use the **EventBus.js** file. This is a simple event bus that allows you to emit and listen for events from both React and Phaser.
+To communicate between React and Phaser, you can use the **EventBus.ts** file. This is a simple event bus that allows you to emit and listen for events from both React and Phaser.
 
 ```js
 // In React
@@ -76,9 +76,7 @@ EventBus.on('event-name', (data) => {
 });
 ```
 
-In addition to this, the `PhaserGame` component exposes the Phaser game instance along with the most recently active Phaser Scene using React forwardRef.
-
-Once exposed, you can access them like any regular react reference.
+In addition to this, the `PhaserGame` component exposes the Phaser game instance along with the most recently active Phaser Scene using React ref.
 
 ## Phaser Scene Handling
 
@@ -108,6 +106,120 @@ class MyScene extends Phaser.Scene
 ```
 
 You don't have to emit this event if you don't need to access the specific scene from React. Also, you don't have to emit it at the end of `create`, you can emit it at any point. For example, should your Scene be waiting for a network request or API call to complete, it could emit the event once that data is ready.
+
+**Important**: Let's consider 2 examples.
+
+1. 
+```ts
+class MyScene extends Phaser.Scene
+{
+    constructor ()
+    {
+        super('MyScene');
+    }
+
+    preload ()
+    {
+        this.load.image('background', 'assets/bg.png');
+    }
+
+    create ()
+    {
+        // Your Game Objects and logic here
+
+        // At the end of create method:
+        EventBus.emit('current-scene-ready', this);
+    }
+}
+```
+
+Here we load some resource via `LoaderPlugin`, when the loading is complete - the `create` method starts. It is important to understand that in this case we have some delay before the start of the `create` method (transferred to a macro task because resource loading happens asynchronously via browser APIs like XHR etc.), and therefore the event will be sent later. This delay gives time to subscribe to the event in `useEffect`. This is important, because we create the game in `useLayoutEffect`, which is executed before paint, and `useEffect` is executed after, so if there is no delay before sending the event from the game - the subscription to the event in `useEffect` will not have time to be executed, and the event from the game will already be sent to nowhere, that is, we will not catch this event, since we subscribe to the event after the event has already been sent.
+
+2.
+```ts
+class MyScene extends Phaser.Scene
+{
+    constructor ()
+    {
+        super('MyScene');
+    }
+
+    preload ()
+    {
+        // LoaderPlugin does not load anything
+    }
+
+    create ()
+    {
+        // Your Game Objects and logic here
+
+        // At the end of create method:
+        EventBus.emit('current-scene-ready', this);
+    }
+}
+```
+
+In this example, we are not loading anything, so the `create` method is executed synchronously right after the `preload` method. Since we have no delay before sending the event, we do not have time to subscribe to it and do not receive this event.
+
+**Note:** You may notice that you still receive the event in `React.StrictMode`. However, this is a **false positive** result, and it is misleading! This can be easily verified by removing `React.StrictMode`, or generating a production build (which automatically removes it), where you will see that you are not receiving the event again. So why do we still get an event in `React.StrictMode`?
+
+This is because `React.StrictMode` runs the effects twice to check for bugs. So we get the following:
+
+**[first iteration]**
+
+1. Creating the game in `useLayoutEffect`.
+2. Sending the `"current-scene-ready"` event.
+3. Subscribing to the `"current-scene-ready"` event in `useEffect`. Here we did not receive the event, because the event was sent before we had time to subscribe.
+
+**[transition between iterations]**
+
+4. Cleaning - the functions that are placed in the `return` of the effects are executed.
+
+    4.1 Deleting the game. **Attention!** When we run `game.destroy()` Phaser does not delete it immediately, instead it sets the `pendingDestroy` flag, which schedules the deletion for the next frame in `requestAnimationFrame`.
+    
+    4.2 Unsubscribing from the event.
+
+**[second iteration]**
+
+5. Creating the game in `useLayoutEffect`. **Attention!** The creation of the game also does not happen immediately. The game instance constructor is executed, in which the game is initialized, where the game render is created via `requestAnimationFrame`, and the actual game updates themselves occur in the render, i.e. the creation of the first scene also occurs in the render. This means that at the moment we have initialized the game, but have not yet created the scene, since its creation occurs in the render, which means it is scheduled for the next frame.
+6. Deleting the old game instance and launching the first tick of the new game are scheduled at this moment. However, since deleting the old game instance took quite a long time, so much so that it took up the entire time of one frame, which is ~ 16ms (at 60 frames per second), there was no time left to execute the first tick (render step) of the new game, since the browser tries to maintain a stable frame rate - this first step of the new game is **skipped**, and therefore the scene in which we send the event is not created. **Attention!** You should not rely on the fact that deleting the old game instance definitely guarantees the first step of rendering the new game instance in the next frame. It all depends on how long the deletion will take. Depending on the Phaser versions, deletion can take different amounts of time due to different implementations. Theoretically, deleting the old game and executing the first render step of the new game can happen in the same frame, in which case we will not receive the event again, since we will not have time to subscribe to it yet.
+7. Subscription to the `"current-scene-ready"` event in the `useEffect`. Now we have time to subscribe to the event before it is sent. Why? Because the game scene in which the event is sent has not yet been created, since it was delayed by the heavy/long deletion of the previous game instance in the same frame.
+8. The first step of rendering the new game instance is performed, where the scene is created and the `"current-scene-ready"` event is sent. Since the subscription to the event has already been executed, we receive this event.
+
+So how do you solve this and subscribe to an event faster than it is sent?
+
+It is enough to wrap the sending of the event in a `setTimeout`, which guarantees subscription to the event before it is sent as shown below. Why is a zero delay in the set timeout sufficient? Because the set timeout creates a macro task regardless of the specified delay, which is guaranteed to be executed not in the current frame, but at least in the next one, which is what we need.
+
+```ts
+class MyScene extends Phaser.Scene
+{
+    constructor ()
+    {
+        super('MyScene');
+    }
+
+    preload ()
+    {
+        // LoaderPlugin does not load anything
+    }
+
+    create ()
+    {
+        // Your Game Objects and logic here
+
+        // At the end of create method:
+        setTimeout(() => {
+            EventBus.emit('current-scene-ready', this);
+        }, 0);
+    }
+}
+```
+
+**Note:** `scene.time.delayedCall(0, ...)` also does not guarantee that we will have time to subscribe, since it is checked for each frame of the Phaser rendering and if specified with a small delay (less than before the start of the next frame), then we will not have time to subscribe, since `useEffect` will not start yet.
+
+Once event subscriptions are already set, subsequent game events can be sent without a `setTimeout`.
+
+Fun :D.
 
 ### React Component Example
 
