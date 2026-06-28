@@ -1,0 +1,40 @@
+.app {
+  align-items: center;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+}
+
+.spritePosition {
+  font-size: 0.8em;
+  margin: 10px 0 0 10px;
+}
+
+.button {
+  background-color: #000;
+  border: 1px solid rgb(255 255 255 / 87%);
+  color: rgb(255 255 255 / 87%);
+  cursor: pointer;
+  margin: 10px;
+  padding: 10px;
+  transition: all 0.3s;
+  width: 140px;
+
+  &:hover {
+    border: 1px solid #0ec3c9;
+    color: #0ec3c9;
+  }
+
+  &:active {
+    background-color: #0ec3c9;
+  }
+
+  /* Disabled styles */
+  &:disabled {
+    cursor: not-allowed;
+    border: 1px solid rgb(255 255 255 / 30%);
+    color: rgb(255 255 255 / 30%);
+  }
+}

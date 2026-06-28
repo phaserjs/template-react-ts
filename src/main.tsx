@@ -1,9 +1,18 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App.tsx';
+import React from "react";
+import { createRoot } from "react-dom/client";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+import App from "#/app/App";
+
+const domNode = document.getElementById("root");
+
+if (domNode) {
+  const root = createRoot(domNode);
+
+  root.render(
     <React.StrictMode>
-        <App />
+      <App />
     </React.StrictMode>,
-)
+  );
+} else {
+  console.error("No element found with id #root");
+}

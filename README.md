@@ -9,9 +9,9 @@ This is a Phaser project template that uses the React framework and Vite for bun
 This template has been updated for:
 
 - [Phaser 4](https://github.com/phaserjs/phaser)
-- [React 19.0.0](https://github.com/facebook/react)
-- [Vite 6.3.1](https://github.com/vitejs/vite)
-- [TypeScript 5.7.2](https://github.com/microsoft/TypeScript)
+- [React 19.2.7](https://react.dev/)
+- [Vite 8](https://vite.dev/)
+- [TypeScript 6](hhttps://www.typescriptlang.org/)
 
 ![screenshot](screenshot.png)
 
@@ -21,13 +21,13 @@ This template has been updated for:
 
 ## Available Commands
 
-| Command | Description |
-|---------|-------------|
-| `npm install` | Install project dependencies |
-| `npm run dev` | Launch a development web server |
-| `npm run build` | Create a production build in the `dist` folder |
-| `npm run dev-nolog` | Launch a development web server without sending anonymous data (see "About log.js" below) |
-| `npm run build-nolog` | Create a production build in the `dist` folder without sending anonymous data (see "About log.js" below) |
+| Command               | Description                                                                                              |
+| --------------------- | -------------------------------------------------------------------------------------------------------- |
+| `npm install`         | Install project dependencies                                                                             |
+| `npm run dev`         | Launch a development web server                                                                          |
+| `npm run build`       | Create a production build in the `dist` folder                                                           |
+| `npm run dev-nolog`   | Launch a development web server without sending anonymous data (see “About log.ts”below)                 |
+| `npm run build-nolog` | Create a production build in the `dist` folder without sending anonymous data (see “About log.ts” below) |
 
 ## Writing Code
 
@@ -41,38 +41,38 @@ Once the server is running you can edit any of the files in the `src` folder. Vi
 
 We have provided a default project structure to get you started. This is as follows:
 
-| Path                          | Description                                                                 |
-|-------------------------------|-----------------------------------------------------------------------------|
-| `index.html`                  | A basic HTML page to contain the game.                                     |
-| `src`                         | Contains the React client source code.                                     |
-| `src/main.tsx`                | The main **React** entry point. This bootstraps the React application.      |
-| `src/PhaserGame.tsx`          | The React component that initializes the Phaser Game and acts as a bridge between React and Phaser. |
-| `src/vite-env.d.ts`           | Global TypeScript declarations, providing type information.                |
-| `src/App.tsx`                 | The main React component.                                                  |
-| `src/game/EventBus.ts`        | A simple event bus to communicate between React and Phaser.                |
-| `src/game`                    | Contains the game source code.                                             |
-| `src/game/main.tsx`           | The main **game** entry point. This contains the game configuration and starts the game. |
-| `src/game/scenes/`            | The folder where Phaser Scenes are located.                                |
-| `public/style.css`            | Some simple CSS rules to help with page layout.                            |
-| `public/assets`               | Contains the static assets used by the game.                               |
+| Path                   | Description                                                                                         |
+| ---------------------- | --------------------------------------------------------------------------------------------------- |
+| `index.html`           | A basic HTML page to contain the game.                                                              |
+| `src`                  | Contains the React client source code.                                                              |
+| `src/main.tsx`         | The main **React** entry point. This bootstraps the React application.                              |
+| `src/PhaserGame.tsx`   | The React component that initializes the Phaser Game and acts as a bridge between React and Phaser. |
+| `src/vite-env.d.ts`    | Global TypeScript declarations, providing type information.                                         |
+| `src/App.tsx`          | The main React component.                                                                           |
+| `src/game/EventBus.ts` | A simple event bus to communicate between React and Phaser.                                         |
+| `src/game`             | Contains the game source code.                                                                      |
+| `src/game/main.tsx`    | The main **game** entry point. This contains the game configuration and starts the game.            |
+| `src/game/scenes/`     | The folder where Phaser Scenes are located.                                                         |
+| `public/style.css`     | Some simple CSS rules to help with page layout.                                                     |
+| `public/assets`        | Contains the static assets used by the game.                                                        |
 
 ## React Bridge
 
 The `PhaserGame.tsx` component is the bridge between React and Phaser. It initializes the Phaser game and passes events between the two.
 
-To communicate between React and Phaser, you can use the **EventBus.js** file. This is a simple event bus that allows you to emit and listen for events from both React and Phaser.
+To communicate between React and Phaser, you can use the **EventBus.ts** file. This is a simple event bus that allows you to emit and listen for events from both React and Phaser.
 
-```js
+```ts
+import { EventBus, GameEvents } from "#/game/event-bus/EventBus";
+
 // In React
-import { EventBus } from './EventBus';
-
 // Emit an event
-EventBus.emit('event-name', data);
+EventBus.emit(GameEvents.EVENT_NAME, data);
 
 // In Phaser
 // Listen for an event
-EventBus.on('event-name', (data) => {
-    // Do something with the data
+EventBus.on(GameEvents.EVENT_NAME, (data) => {
+  // Do something with the data
 });
 ```
 
@@ -88,53 +88,43 @@ You can get the current Phaser Scene from the component event `"current-active-s
 
 **Important**: When you add a new Scene to your game, make sure you expose to React by emitting the `"current-scene-ready"` event via the `EventBus`, like this:
 
-
 ```ts
-class MyScene extends Phaser.Scene
-{
-    constructor ()
-    {
-        super('MyScene');
-    }
+class MyScene extends Phaser.Scene {
+  constructor() {
+    super("MyScene");
+  }
 
-    create ()
-    {
-        // Your Game Objects and logic here
+  create() {
+    // Your Game Objects and logic here
 
-        // At the end of create method:
-        EventBus.emit('current-scene-ready', this);
-    }
+    // At the end of create method:
+    EventBus.emit(GameEvents.CURRENT_SCENE_READY, this);
+  }
 }
 ```
 
-You don't have to emit this event if you don't need to access the specific scene from React. Also, you don't have to emit it at the end of `create`, you can emit it at any point. For example, should your Scene be waiting for a network request or API call to complete, it could emit the event once that data is ready.
+You don’t have to emit this event if you don’t need to access the specific scene from React. Also, you don’t have to emit it at the end of `create`, you can emit it at any point. For example, should your Scene be waiting for a network request or API call to complete, it could emit the event once that data is ready.
 
 ### React Component Example
 
-Here's an example of how to access Phaser data for use in a React Component:
+Here’s an example of how to access Phaser data for use in a React Component:
 
-```ts
-import { useRef } from 'react';
-import { IRefPhaserGame } from "./game/PhaserGame";
+```tsx
+import { useRef } from "react";
+import { IRefPhaserGame, PhaserGame } from "#/phaser-game/PhaserGame";
 
 // In a parent component
 const ReactComponent = () => {
+  const phaserRef = useRef<IRefPhaserGame | null>(null);
 
-    const phaserRef = useRef<IRefPhaserGame>(); // you can access to this ref from phaserRef.current
+  const onCurrentActiveScene = (scene: Phaser.Scene) => {
+    // This is invoked
+  };
 
-    const onCurrentActiveScene = (scene: Phaser.Scene) => {
-    
-        // This is invoked
-
-    }
-
-    return (
-        ...
-        <PhaserGame ref={phaserRef} currentActiveScene={onCurrentActiveScene} />
-        ...
-    );
-
-}
+  return (
+    <PhaserGame ref={phaserRef} currentActiveScene={onCurrentActiveScene} />
+  );
+};
 ```
 
 In the code above, you can get a reference to the current Phaser Game instance and the current Scene by creating a reference with `useRef()` and assign to PhaserGame component.
@@ -149,22 +139,22 @@ Vite supports loading assets via JavaScript module `import` statements.
 
 This template provides support for both embedding assets and also loading them from a static folder. To embed an asset, you can import it at the top of the JavaScript file you are using it in:
 
-```js
-import logoImg from './assets/logo.png'
+```ts
+import logoImg from "./assets/logo.png";
 ```
 
 To load static files such as audio files, videos, etc place them into the `public/assets` folder. Then you can use this path in the Loader calls within Phaser:
 
-```js
-preload ()
+```ts
+preload();
 {
-    //  This is an example of an imported bundled image.
-    //  Remember to import it at the top of this file
-    this.load.image('logo', logoImg);
+  //  This is an example of an imported bundled image.
+  //  Remember to import it at the top of this file
+  this.load.image("logo", logoImg);
 
-    //  This is an example of loading a static image
-    //  from the public/assets folder:
-    this.load.image('background', 'assets/bg.png');
+  //  This is an example of loading a static image
+  //  from the public/assets folder:
+  this.load.image("background", "assets/bg.png");
 }
 ```
 
@@ -174,7 +164,7 @@ When you issue the `npm run build` command, all static assets are automatically 
 
 After you run the `npm run build` command, your code will be built into a single bundle and saved to the `dist` folder, along with any other assets your project imported, or stored in the public assets folder.
 
-In order to deploy your game, you will need to upload *all* of the contents of the `dist` folder to a public facing web server.
+In order to deploy your game, you will need to upload _all_ of the contents of the `dist` folder to a public facing web server.
 
 ## Customizing the Template
 
@@ -182,17 +172,17 @@ In order to deploy your game, you will need to upload *all* of the contents of t
 
 If you want to customize your build, such as adding plugin (i.e. for loading CSS or fonts), you can modify the `vite/config.*.mjs` file for cross-project changes, or you can modify and/or create new configuration files and target them in specific npm tasks inside of `package.json`. Please see the [Vite documentation](https://vitejs.dev/) for more information.
 
-## About log.js
+## About log.ts
 
-If you inspect our node scripts you will see there is a file called `log.js`. This file makes a single silent API call to a domain called `gryzor.co`. This domain is owned by Phaser Studio Inc. The domain name is a homage to one of our favorite retro games.
+If you inspect our node scripts you will see there is a file called `log.ts`. This file makes a single silent API call to a domain called `gryzor.co`. This domain is owned by Phaser Studio Inc. The domain name is a homage to one of our favorite retro games.
 
-We send the following 3 pieces of data to this API: The name of the template being used (vue, react, etc). If the build was 'dev' or 'prod' and finally the version of Phaser being used.
+We send the following 3 pieces of data to this API: The name of the template being used (vue, react, etc). If the build was `dev` or `prod` and finally the version of Phaser being used.
 
-At no point is any personal data collected or sent. We don't know about your project files, device, browser or anything else. Feel free to inspect the `log.js` file to confirm this.
+At no point is any personal data collected or sent. We don’t know about your project files, device, browser or anything else. Feel free to inspect the `log.ts` file to confirm this.
 
-Why do we do this? Because being open source means we have no visible metrics about which of our templates are being used. We work hard to maintain a large and diverse set of templates for Phaser developers and this is our small anonymous way to determine if that work is actually paying off, or not. In short, it helps us ensure we're building the tools for you.
+Why do we do this? Because being open source means we have no visible metrics about which of our templates are being used. We work hard to maintain a large and diverse set of templates for Phaser developers and this is our small anonymous way to determine if that work is actually paying off, or not. In short, it helps us ensure we’re building the tools for you.
 
-However, if you don't want to send any data, you can use these commands instead:
+However, if you don’t want to send any data, you can use these commands instead:
 
 Dev:
 
@@ -206,14 +196,14 @@ Build:
 npm run build-nolog
 ```
 
-Or, to disable the log entirely, simply delete the file `log.js` and remove the call to it in the `scripts` section of `package.json`:
+Or, to disable the log entirely, simply delete the file `log.ts` and remove the call to it in the `scripts` section of `package.json`:
 
 Before:
 
 ```json
 "scripts": {
-    "dev": "node log.js dev & dev-template-script",
-    "build": "node log.js build & build-template-script"
+    "dev": "node ./scripts/log.ts dev & vite --config vite/config.dev.ts",
+    "build": "node ./scripts/log.ts build & vite build --config vite/config.prod.ts"
 },
 ```
 
@@ -221,12 +211,12 @@ After:
 
 ```json
 "scripts": {
-    "dev": "dev-template-script",
-    "build": "build-template-script"
+    "dev": "vite --config vite/config.dev.ts",
+    "build": "vite build --config vite/config.prod.ts"
 },
 ```
 
-Either of these will stop `log.js` from running. If you do decide to do this, please could you at least join our Discord and tell us which template you're using! Or send us a quick email. Either will be super-helpful, thank you.
+Either of these will stop `log.ts` from running. If you do decide to do this, please could you at least join our Discord and tell us which template you’re using! Or send us a quick email. Either will be super-helpful, thank you.
 
 ## Join the Phaser Community!
 
@@ -241,6 +231,4 @@ We love to see what developers like you create with Phaser! It really motivates 
 
 Created by [Phaser Studio](mailto:support@phaser.io). Powered by coffee, anime, pixels and love.
 
-The Phaser logo and characters are &copy; 2011 - 2025 Phaser Studio Inc.
-
-All rights reserved.
+The Phaser logo and characters are ©2011–2025 Phaser Studio Inc. All rights reserved.

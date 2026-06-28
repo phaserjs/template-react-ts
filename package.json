@@ -1,48 +1,94 @@
 {
-  "name": "template-react-ts",
-  "description": "A Phaser 3 TypeScript project template that demonstrates React communication and uses Vite for bundling.",
-  "version": "1.1.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/phaserjs/template-react-ts.git"
-  },
-  "author": "Phaser Studio <support@phaser.io> (https://phaser.io/)",
-  "license": "MIT",
-  "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
-  "bugs": {
-    "url": "https://github.com/phaserjs/template-react-ts/issues"
-  },
-  "homepage": "https://github.com/phaserjs/template-react-ts#readme",
-  "keywords": [
-    "phaser",
-    "phaser3",
-    "react",
-    "vite",
-    "typescript"
-  ],
-  "scripts": {
-    "dev": "node log.js dev & vite --config vite/config.dev.mjs",
-    "build": "node log.js build & vite build --config vite/config.prod.mjs",
-    "dev-nolog": "vite --config vite/config.dev.mjs",
-    "build-nolog": "vite build --config vite/config.prod.mjs"
-  },
-  "dependencies": {
-    "phaser": "4.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.22.0",
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
-    "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9.22.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
-    "globals": "^16.0.0",
-    "typescript": "~5.7.2",
-    "typescript-eslint": "^8.26.1",
-    "vite": "^6.3.1",
-    "terser": "^5.28.1"
-  }
+    "name": "template-react-ts",
+    "description": "A Phaser 4 TypeScript project template that demonstrates React communication and uses Vite for bundling.",
+    "version": "1.1.0",
+    "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/phaserjs/template-react-ts.git"
+    },
+    "author": "Phaser Studio <support@phaser.io> (https://phaser.io/)",
+    "license": "MIT",
+    "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
+    "bugs": {
+        "url": "https://github.com/phaserjs/template-react-ts/issues"
+    },
+    "homepage": "https://github.com/phaserjs/template-react-ts#readme",
+    "keywords": [
+        "phaser",
+        "phaser4",
+        "react",
+        "vite",
+        "typescript"
+    ],
+    "engines": {
+        "node": ">=24.0.0"
+    },
+    "scripts": {
+        "build-nolog": "vite build --config vite/config.prod.ts",
+        "build": "node ./scripts/log.ts build & vite build --config vite/config.prod.ts",
+        "dev-nolog": "vite --config vite/config.dev.ts",
+        "dev": "node ./scripts/log.ts dev & vite --config vite/config.dev.ts",
+        "format-fix": "prettier --write --ignore-unknown .",
+        "format": "prettier --check --ignore-unknown .",
+        "lint-fix": "eslint . --cache --ext .ts,.tsx --fix",
+        "lint": "eslint . --cache --ext .ts,.tsx",
+        "prepare": "husky",
+        "stylelint-fix": "stylelint **/*.css --cache --fix",
+        "stylelint": "stylelint **/*.css --cache",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "typecheck": "tsc --noEmit"
+    },
+    "lint-staged": {
+        "*.css": [
+            "stylelint --cache --fix",
+            "prettier --write"
+        ],
+        "*.{ts,tsx}": [
+            "eslint --fix",
+            "prettier --write"
+        ],
+        "!(*.css|*.ts|*.tsx)": [
+            "prettier --write --ignore-unknown"
+        ]
+    },
+    "dependencies": {
+        "phaser": "4.2.1",
+        "react": "19.2.8",
+        "react-dom": "19.2.8"
+    },
+    "devDependencies": {
+        "@eslint/js": "10.0.1",
+        "@rolldown/plugin-babel": "0.2.3",
+        "@stylistic/stylelint-config": "5.0.0",
+        "@types/node": "24.13.3",
+        "@types/react": "19.2.18",
+        "@types/react-dom": "19.2.7",
+        "@vitejs/plugin-react": "6.1.1",
+        "babel-plugin-react-compiler": "1.0.0",
+        "eslint": "10.10.0",
+        "eslint-plugin-import": "2.32.0",
+        "eslint-plugin-n": "18.3.0",
+        "eslint-plugin-react": "7.37.5",
+        "eslint-plugin-react-compiler": "19.1.0-rc.2",
+        "eslint-plugin-react-hooks": "7.1.1",
+        "eslint-plugin-react-refresh": "0.5.6",
+        "eslint-plugin-simple-import-sort": "14.0.0",
+        "globals": "17.12.0",
+        "husky": "9.1.7",
+        "jiti": "2.7.0",
+        "lint-staged": "17.5.0",
+        "prettier": "3.9.6",
+        "stylelint": "17.15.0",
+        "stylelint-config-standard": "40.0.0",
+        "typescript": "6.0.3",
+        "typescript-eslint": "8.69.0",
+        "vite": "8.2.2",
+        "vite-plugin-circular-dependency": "0.6.0",
+        "vite-plugin-typed-css-modules": "0.5.3"
+    },
+    "overrides": {
+        "brace-expansion": "5.0.9",
+        "zod-validation-error": "4.0.2"
+    }
 }
