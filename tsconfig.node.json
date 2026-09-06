@@ -1,4 +1,6 @@
 {
+  "include": ["./*.config.ts", "./scripts/*.ts", "./vite/*.ts"],
+
   "compilerOptions": {
     "composite": true,
     "skipLibCheck": true,
@@ -6,6 +8,5 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "strict": true
-  },
-  "include": ["vite.config.ts"]
+  }
 }

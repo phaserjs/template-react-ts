@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+
+npm run lint
+npm run stylelint
+npm run format
+npm run typecheck
